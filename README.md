@@ -11,7 +11,6 @@ Runs the app in the development mode.<br />
 Builds the app for production to the `build` folder.<br />
 
 ### `npm install serve -g`
-### `npm run build`
-### `serve -s build`
+### `npm run build:prod`
 
 Runs the app in the production mode
