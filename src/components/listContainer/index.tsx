@@ -47,11 +47,12 @@ function ListContainer({list, bookmarks}: ListProps) {
     }
 
     const classes = Style();
+
     return(
         <List className={classes.root}>
             {
                 list.map((el: Element, i: number) => (
-                    <React.Fragment key={el.id.videoId}>
+                    <React.Fragment key={el.id.videoId + i}>
                         <ListItem alignItems="flex-start" className={classes.listItem}>
                             <ListItemAvatar>
                             <Avatar alt="Some alt" src={el.snippet.thumbnails.default.url} />

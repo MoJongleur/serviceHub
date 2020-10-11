@@ -4,9 +4,10 @@ import * as actionTypes from '../constants/actionTypes';
 // Modules
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
-import Youtube from "youtube.ts";
+import axios from 'axios';
 
-const youtube = new Youtube('AIzaSyA7vkpGZwrPUW3Exzb32uE66pnKqnjWQFI')
+const endpoint = 'https://www.googleapis.com/youtube/v3/search';
+const GToken = 'AIzaSyDoPaRbVKiCTaZFZj2Ud_FptW_uhvzde4I';
 
 interface IncomingData {
     etag: string,
@@ -27,6 +28,7 @@ export function setRequestEnded(searchString:string, data:IncomingData) {
     return {
         type: actionTypes.SET_REQUEST_ENDED,
         data: data.items,
+        nextPageToken: data.nextPageToken,
         searchString
     };
 }
@@ -37,44 +39,14 @@ export function setRequestError(error: any) {
     };
 }
 
-export function loadMoreIncrement() {
-    return {
-        type: actionTypes.LOAD_MORE_INCREMENT
-    };
-}
-
-export function loadMoreInProcess() {
-    return {
-        type: actionTypes.LOAD_MORE_IN_PROCESS
-    };
-}
-
-export function loadMoreEnded() {
-    return {
-        type: actionTypes.LOAD_MORE_ENDED
-    };
-}
-
-export function searchAsync(searchString: string, count: number) {
+export function searchAsync(searchString: string, pageToken?: string) {
     return async (dispatch: ThunkDispatch<{}, {}, AnyAction>): Promise<void> => {
         try {
             dispatch(setRequestInProcess())
-            const videoSearch = await youtube.videos.search({q: searchString, maxResults: count});
-            dispatch(setRequestEnded(searchString, videoSearch))
+            const response = await axios.get(endpoint, {params: {q: searchString, maxResults: 5, key: GToken, pageToken: pageToken, part: 'snippet'}}).then((r) => r.data);
+            dispatch(setRequestEnded(searchString, response))
         } catch(err) {
             dispatch(setRequestError(err))
-        }
-    }
-}
-
-export function loadMore() {
-    return (dispatch: ThunkDispatch<{}, {}, AnyAction>): void => {
-        try {
-            dispatch(loadMoreInProcess())
-            dispatch(loadMoreIncrement())
-            dispatch(loadMoreEnded())
-        } catch(err) {
-            // TODO тут можно было бы основываясь на количестве результатов нашего запроса выдавать ошибку/убирать кнопку из видимости/что-то еще, но я вспомнил об этом куске кода когда уже все было готово и решил забить)
         }
     }
 }

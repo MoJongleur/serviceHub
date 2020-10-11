@@ -8,7 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 
 // Action
-import { searchAsync, loadMore } from '../../redux/actions/searchAction';
+import { searchAsync } from '../../redux/actions/searchAction';
 
 // Components
 import ListContainer from '../../components/listContainer/index';
@@ -29,15 +29,12 @@ function Search() {
 
     function reactRequest() {
         if(searchRef.current !== null) {
-            dispatch(searchAsync(searchRef.current.value, select.search.count));
+            dispatch(searchAsync(searchRef.current.value, select.search.pageToken));
         }
     }
     
-    async function handleLoadMore() {
-        await dispatch(loadMore());
-        if(searchRef.current !== null) {
-            dispatch(searchAsync(select.search.searchString, select.search.count+5));
-        }
+    function handleLoadMore() {
+        dispatch(searchAsync(select.search.searchString, select.search.pageToken));
     }
 
     return (
